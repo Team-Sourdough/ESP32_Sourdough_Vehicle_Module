@@ -52,8 +52,8 @@ void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95, Adafruit_GPS *GPS) {
 
 void RF_Task(void* p_arg){  
       // Setup RF
-      RH_RF95 rf95(RFM95_CS, RFM95_INT);
-      RF_Setup(&rf95);
+      //RH_RF95 rf95(RFM95_CS, RFM95_INT);
+      //RF_Setup(&rf95);
       Serial.println("Setup RF");
       while(1){
             Serial.println("RF Task!");
