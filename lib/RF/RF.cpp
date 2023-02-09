@@ -56,7 +56,7 @@ void RF_Task(void* p_arg){
       //RF_Setup(&rf95);
       Serial.println("Setup RF");
       while(1){
-            Serial.println("RF Task!");
+            Serial.println("RF yayyy!");
             delay(10);
       }
 }
