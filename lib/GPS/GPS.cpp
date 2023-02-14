@@ -161,37 +161,81 @@ bool GPS_Pack_uint8(uint8_t *array,Adafruit_GPS *GPS) {
       return 1;
 }
 
+//This function will create a message buffer of 25 bytes for later
+//Returns the message buffer that was created
+MessageBufferHandle_t Message_Buffer_Create_25byte(){
+      xMessageBuffer = xMessageBufferCreate(xMessageBufferSizeBytes);
+
+      if( xMessageBuffer == NULL ){
+            // There was not enough heap memory space available to create the
+            // message buffer.
+            Serial.println("Something went wrong in the creation of the message buffer");
+            return NULL;
+      }
+      else{
+            return xMessageBuffer;
+      }
+
+}
+
+//This is the function that will send our data to the data buffer, this will be read in the RF task so we can send the data!
+//No output
+void Message_Buffer_Send( MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){
+      size_t xBytesSent;
+
+      xBytesSent = xMessageBufferSend(xMessageBuffer, ( void * ) data_array, sizeof(*data_array), x100ms);
+
+      if(xBytesSent != sizeof(*data_array)){
+            // The call to xMessageBufferSend() times out before there was enough
+            // space in the buffer for the data to be written.
+            Serial.println("The buffer did not allocate space in time\n");
+            return;
+      }
+      else{
+            Serial.println("We good\n");
+      }
+      return;
+}
+
+
+
+
 //GPS Task to handle recieving position and notifies RF task
 void GPS_Task(void* p_arg){
       //Setup GPS 
+      Serial.println("Got into GPS Task");
       Adafruit_GPS GPS(&GPSSerial);
       GPS_Setup(&GPS);
       //Serial.println("GPS setup");
-      uint8_t array[25];
+      uint8_t data_array[25];
+      uint8_t test_array[25];
       int cont = 0;
 
+      Serial.println("Got GPS Setup");
+
       //Create the buffer that will be used to send data over to the RF task
-      xMessageBuffer = xMessageBufferCreate( xMessageBufferSizeBytes );
       while(1){
             //Get location and post semaphore for RF
 
             //Returns true if we get a fix and data
-            cont = GPS_Location(array,timer,&GPS);
+            cont = GPS_Location(data_array,timer,&GPS);
 
 
-            if(cont) {
-            //To my knowledge pack will get all our data into an array
-            GPS_Pack_uint8(array, &GPS); //speed
+            //if(cont) {
+            //To my knowledge, pack will get all our data into an array
+            GPS_Pack_uint8(data_array, &GPS); //This will pack all of our info for the system
+
             //This posts the data to the message buffer that the RF module will use
-            xMessageBufferSend(xMessageBuffer, ( void * ) array, sizeof(array), x100ms);
-            }
+            Message_Buffer_Send(xMessageBuffer, data_array);
+            //delay(100);
+           // }
 
 
             //Message queue to RF 
 
             //Post semaphore
             Serial.println("GPS Task!");
-            delay(10);
+            delay(100);
       }
 
 }
