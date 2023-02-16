@@ -1,6 +1,5 @@
 #include <Arduino.h>
-
-#define BUTTON_GPIO 2
+#include "../common.h"
 
 void IRAM_ATTR Button_ISR(){
     Serial.println("Button pressed");

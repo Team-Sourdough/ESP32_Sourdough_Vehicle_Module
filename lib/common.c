@@ -1,5 +1,7 @@
 #include "common.h"
 
+#define BUTTON_GPIO 2
+
 void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){
       size_t xReceivedBytes;
       xReceivedBytes = xMessageBufferReceive( xMessageBuffer, ( void * ) data_array, sizeof(*data_array),x100ms);

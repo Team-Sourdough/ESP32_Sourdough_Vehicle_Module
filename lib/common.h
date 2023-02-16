@@ -5,6 +5,8 @@
 #include <message_buffer.h>
 #include <Arduino.h>
 
+#define BUTTON_GPIO 2
+
 //This buffer will be used to send the gps data to the RF task to actually send that bitch
 MessageBufferHandle_t xMessageBuffer;
 //Our buffer size needs to be 25 bytes, however there are an additional 4 bytes to hold the size of the buffer
