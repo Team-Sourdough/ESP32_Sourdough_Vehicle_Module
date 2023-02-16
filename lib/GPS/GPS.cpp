@@ -1,5 +1,7 @@
 #include "./GPS.h"
 
+uint32_t timer = millis();
+
 //Performs initialization for GPS Module, by passing reference to driver.
 void GPS_Setup(Adafruit_GPS *GPS) {
     GPSSerial.begin(9600, SERIAL_8N1, 8,7);
@@ -43,8 +45,6 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
             timer = millis();
 
             //Print current Fix status to determine if we have a connection.
-            Serial.print("Fix: ");
-            Serial.println((int)GPS->fix);
             
             //GPS is active: Calculate lat and longitude
             if (GPS->fix==1) {
@@ -75,10 +75,10 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
                   longitude *= -1.0;
                   }
                   //Display Measured Latitude and Longitude
-                  Serial.print("Latitude: ");
-                  Serial.println(latitude, 8);
-                  Serial.print("Longitude: ");
-                  Serial.println(longitude, 8);
+                  // Serial.print("Latitude: ");
+                  // Serial.println(latitude, 8);
+                  // Serial.print("Longitude: ");
+                  // Serial.println(longitude, 8);
 
                   //Put found latitude and longitude into array to be sent.
                   uint8_t* tempLat = (uint8_t*)(&latitude);
@@ -93,26 +93,110 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
             }
       }
       //If we got here... fix was zero / GPS not establishing connection.
-      Serial.println("GPS failed in some way");
       return 0;
 }
+
+bool GPS_Pack_uint8(uint8_t *array,Adafruit_GPS *GPS) {
+      int i = 0;
+      int j = 4;
+      float type_s = GPS->speed;
+      float type_a = GPS->angle;
+      float type_se = GPS->seconds;
+      uint8_t type_m = GPS->minute;
+      uint8_t type_h = GPS->hour;
+      uint8_t type_d = GPS->day;
+      uint8_t type_mo = GPS->month;
+      uint8_t type_y = GPS->year;
+      // Serial.print("Seconds since time is:");
+      // Serial.println(GPS->secondsSinceTime());
+      // Serial.print("GPS Seconds is:");
+      // Serial.println(GPS->seconds);
+      // Serial.print("Seconds is:");
+      // Serial.println(type_se);
+      // Serial.print("Millis is:");
+      // Serial.println(millis());
+      // Serial.print("type se to send is:");
+      // Serial.println(type_se);
+
+      uint8_t* temp_speed = (uint8_t*)(&type_s);
+      uint8_t* temp_angle = (uint8_t*)(&type_a);
+      uint8_t* temp_seconds = (uint8_t*)(&type_se);
+      uint8_t* temp_minute = (uint8_t*)(&type_m);
+      uint8_t* temp_hour = (uint8_t*)(&type_h);
+      uint8_t* temp_day = (uint8_t*)(&type_d);
+      uint8_t* temp_month = (uint8_t*)(&type_mo);
+      uint8_t* temp_year = (uint8_t*)(&type_y);
+      for(i = 8; i < 12; i++){
+            array[i] = temp_speed[i-8];
+            //Serial.println(array[b]);
+            }
+      for(i = 12; i < 16; i++){
+            array[i] = temp_angle[i-12];
+            //Serial.println(array[b]);
+            }
+      for(i = 16; i < 20; i++){
+            array[i] = temp_seconds[i-16];
+            //Serial.println(array[b]);
+            }
+      for(i = 20; i < 21; i++){
+            array[i] = temp_minute[i-20];
+            //Serial.println(array[b]);
+            }
+      for(i = 21; i < 22; i++){
+            array[i] = temp_hour[i-21];
+            //Serial.println(array[b]);
+            }
+      for(i = 22; i < 23; i++){
+            array[i] = temp_day[i-22];
+            //Serial.println(array[b]);
+            }
+      for(i = 23; i < 24; i++){
+            array[i] = temp_month[i-23];
+            //Serial.println(array[b]);
+            }
+      for(i = 24; i < 25; i++){
+            array[i] = temp_year[i-24];
+            //Serial.println(array[b]);
+            }
+      return 1;
+}
+
 
 //GPS Task to handle recieving position and notifies RF task
 void GPS_Task(void* p_arg){
       //Setup GPS 
+      Serial.println("Got into GPS Task");
       Adafruit_GPS GPS(&GPSSerial);
       GPS_Setup(&GPS);
-      Serial.println("GPS setup");
+      //Serial.println("GPS setup");
+      uint8_t data_array[DataBufferSize];
+      int cont = 0;
+
+      Serial.println("Got GPS Setup");
+
+      //Create the buffer that will be used to send data over to the RF task
       while(1){
             //Get location and post semaphore for RF
-            // GPS_Location()
+
+            //Returns true if we get a fix and data
+            cont = GPS_Location(data_array,timer,&GPS);
+
+
+            //if(cont) {
+            //To my knowledge, pack will get all our data into an array
+            GPS_Pack_uint8(data_array, &GPS); //This will pack all of our info for the system
+
+            //This posts the data to the message buffer that the RF module will use
+            Message_Buffer_Send(xMessageBuffer, data_array);
+            //delay(100);
+           // }
 
 
             //Message queue to RF 
 
             //Post semaphore
             Serial.println("GPS Task!");
-            delay(10);
+            delay(100);
       }
 
 }

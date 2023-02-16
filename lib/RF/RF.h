@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 #include <Arduino.h>
+#include "../common.h"
 
 //RF pin defines
 #define RFM95_RST     5   

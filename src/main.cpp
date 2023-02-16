@@ -37,6 +37,7 @@
 #include "RF.cpp"
 #include "Mic.cpp"
 #include "Button.cpp"
+#include "../lib/common.c"
 
 
 void setup(){
@@ -70,16 +71,17 @@ void setup(){
     attachInterrupt(BUTTON_GPIO, Button_ISR, FALLING);
 
 //CORE 1: (mic will run on its own core) 
-   xTaskCreatePinnedToCore(
-                  &Mic_Task,   /* Task function. */
-                  "Mic Task",     /* name of task. */
-                  10240,       /* Stack size of task */
-                  NULL,        /* parameter of the task */
-                  10,           /* priority of the task */
-                  &micTask,      /* Task handle to keep track of created task */
-                  1);          /* pin task to core 1 */ 
-   
+//    xTaskCreatePinnedToCore(
+//                   &Mic_Task,   /* Task function. */
+//                   "Mic Task",     /* name of task. */
+//                   10240,       /* Stack size of task */
+//                   NULL,        /* parameter of the task */
+//                   10,           /* priority of the task */
+//                   &micTask,      /* Task handle to keep track of created task */
+//                   1);          /* pin task to core 1 */ 
 
+
+xMessageBuffer = Message_Buffer_Create_25byte();
 }
 
 void loop(){
