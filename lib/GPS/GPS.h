@@ -12,6 +12,4 @@ void GPS_Setup(Adafruit_GPS *GPS);
 bool GPS_Location(uint8_t *array, uint32_t timer);
 
 void GPS_Task(void* p_arg);
-MessageBufferHandle_t Message_Buffer_Create_25byte();
-void Message_Buffer_Send( MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]);
 #endif

@@ -17,7 +17,6 @@ void RF_Setup(RH_RF95 *rf95);
 void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95);
 
 void RF_Task(void* p_arg);
-void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[25]);
 
 
 #endif

@@ -37,6 +37,7 @@
 #include "RF.cpp"
 #include "Mic.cpp"
 #include "Button.cpp"
+#include "../lib/common.c"
 
 
 void setup(){

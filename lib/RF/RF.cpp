@@ -52,20 +52,13 @@ void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95) {
 } 
 
 
-void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){
-      size_t xReceivedBytes;
-      xReceivedBytes = xMessageBufferReceive( xMessageBuffer, ( void * ) data_array, sizeof(*data_array),x100ms);
-      return;
-}
-
-
 void RF_Task(void* p_arg){  
       // Setup RF
       RH_RF95 rf95(RFM95_CS, RFM95_INT);
       RF_Setup(&rf95);
 
       Serial.println("Setup RF");
-      uint8_t data_array[25];
+      uint8_t data_array[DataBufferSize];
 
       while(1){
             Serial.println("RF Task");
