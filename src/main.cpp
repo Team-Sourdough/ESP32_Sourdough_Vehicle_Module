@@ -79,6 +79,7 @@ void setup(){
 
 
 xMessageBuffer = Message_Buffer_Create_25byte();
+rfEventGroup = EventGroupCreate();
 }
 
 void loop(){
