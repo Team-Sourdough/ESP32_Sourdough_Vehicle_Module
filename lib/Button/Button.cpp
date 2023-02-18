@@ -1,5 +1,8 @@
+#include "Button.h"
+
 #include <Arduino.h>
 #include "../common.h"
+
 
 //NOTE: THE RF->SEND FUNCTION WILL BLOCK INTERRUPTS WHICH MAY PREVENT US FROM UNSETTING THE SIREN FLAG 
 

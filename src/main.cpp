@@ -43,10 +43,13 @@
 void setup(){
 
      Serial.begin(115200); 
-
+//Create RTOS objects:
     TaskHandle_t gpsTask;
     TaskHandle_t rfTask;
     TaskHandle_t micTask;
+    xMessageBuffer = Message_Buffer_Create_25byte();
+    rfEventGroup = EventGroupCreate();
+    
 //Create component tasks
 //CORE 0:
    xTaskCreatePinnedToCore(
@@ -78,8 +81,6 @@ void setup(){
                   1);          /* pin task to core 1 */ 
 
 
-xMessageBuffer = Message_Buffer_Create_25byte();
-rfEventGroup = EventGroupCreate();
 }
 
 void loop(){

@@ -35,7 +35,7 @@ enum rfEventFlagsEnum {
     sirenDetected = 0b1 << 1
 };
 
-const TickType_t EVENT_GROUP_PEND_BLOCKING = portMAX_DELAY; //Max number of ticks
+const TickType_t EVENT_GROUP_PEND_BLOCKING = portMAX_DELAY; //pdMS_TO_TICKS( 10 );//100ms //portMAX_DELAY; //Max number of ticks
 
 //Function Definitions
 EventGroupHandle_t EventGroupCreate();
