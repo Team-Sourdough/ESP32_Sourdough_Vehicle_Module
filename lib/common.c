@@ -59,6 +59,6 @@ EventGroupHandle_t EventGroupCreate(){
       }
       else
       {
-            return xCreatedEventGroup 
+            return xCreatedEventGroup;
       }
 }

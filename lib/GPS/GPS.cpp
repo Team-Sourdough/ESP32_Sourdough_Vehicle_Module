@@ -181,22 +181,14 @@ void GPS_Task(void* p_arg){
             //Returns true if we get a fix and data
             cont = GPS_Location(data_array,timer,&GPS);
 
-
-            //if(cont) {
             //To my knowledge, pack will get all our data into an array
             GPS_Pack_uint8(data_array, &GPS); //This will pack all of our info for the system
 
             //This posts the data to the message buffer that the RF module will use
             Message_Buffer_Send(xMessageBuffer, data_array);
-            //delay(100);
-           // }
 
-
-            //Message queue to RF 
-
-            //Post semaphore
-            Serial.println("GPS Task!");
-            delay(100);
+            //Post updateGPS event flag
+            xEventGroupSetBits(rfEventGroup, updateGPS);
       }
 
 }
