@@ -58,12 +58,24 @@ void RF_Task(void* p_arg){
       RF_Setup(&rf95);
 
       Serial.println("Setup RF");
-      uint8_t data_array[DataBufferSize];
+      uint8_t rfDataArray[DataBufferSize];
+      EventBits_t eventFlags;
 
       while(1){
             Serial.println("RF Task");
-            Message_Buffer_Recieve(xMessageBuffer, data_array);
-            RF_Send_GPS(data_array,&rf95); 
-            delay(100);
+            
+            //Pend on updateGPS and siren event flags
+            eventFlags = xEventGroupWaitBits(rfEventGroup, (updateGPS | sirenDetected), pdFALSE, pdTRUE, EVENT_GROUP_PEND_BLOCKING);
+
+            if(updateGPS & eventFlags) { //update rfDataArray based on new GPS data from buffer
+                  //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
+                  xEventGroupClearBits(rfEventGroup, updateGPS);
+                  Message_Buffer_Recieve(xMessageBuffer, rfDataArray);
+                   
+            }
+
+            if(sirenDetected & eventFlags){
+                  RF_Send_GPS(rfDataArray,&rf95); 
+            }
       }
 }

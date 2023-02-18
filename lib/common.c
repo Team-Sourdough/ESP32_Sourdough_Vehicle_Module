@@ -2,7 +2,7 @@
 
 #define BUTTON_GPIO 2
 
-void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){
+void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){ //TODO: May need to add a mutex to protect reading and writing to the 
       size_t xReceivedBytes;
       xReceivedBytes = xMessageBufferReceive( xMessageBuffer, ( void * ) data_array, sizeof(*data_array),x100ms);
       return;

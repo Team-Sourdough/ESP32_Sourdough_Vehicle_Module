@@ -30,14 +30,16 @@ void Message_Buffer_Send( MessageBufferHandle_t xMessageBuffer, uint8_t data_arr
 //Event Group
 //--------------------------------------------------------------------------------------------------------------
 EventGroupHandle_t rfEventGroup;
+enum rfEventFlagsEnum {
+    updateGPS = 0b1 << 0,
+    sirenDetected = 0b1 << 1
+};
+
+const TickType_t EVENT_GROUP_PEND_BLOCKING = portMAX_DELAY; //Max number of ticks
 
 //Function Definitions
 EventGroupHandle_t EventGroupCreate();
 //--------------------------------------------------------------------------------------------------------------
-
-//--------------------------------------------------------------------------------------------------------------
-//Function Definitions
-//-------------------------------------------------------------------------------------------------------------
 
 
 #endif
