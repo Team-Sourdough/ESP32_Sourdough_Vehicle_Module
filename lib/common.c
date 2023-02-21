@@ -2,9 +2,9 @@
 
 #define BUTTON_GPIO 2
 
-void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){
+void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){ //TODO: May need to add a mutex to protect reading and writing to the 
       size_t xReceivedBytes;
-      xReceivedBytes = xMessageBufferReceive( xMessageBuffer, ( void * ) data_array, sizeof(*data_array),x100ms);
+      xReceivedBytes = xMessageBufferReceive( xMessageBuffer, ( void * ) data_array, DataBufferSize, x100ms);
       return;
 }
 
@@ -31,9 +31,9 @@ MessageBufferHandle_t Message_Buffer_Create_25byte(){
 void Message_Buffer_Send( MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]){
       size_t xBytesSent;
 
-      xBytesSent = xMessageBufferSend(xMessageBuffer, ( void * ) data_array, sizeof(*data_array), x100ms);
+      xBytesSent = xMessageBufferSend(xMessageBuffer, ( void * ) data_array, DataBufferSize, x100ms);
 
-      if(xBytesSent != sizeof(*data_array)){
+      if(xBytesSent != DataBufferSize){
             // The call to xMessageBufferSend() times out before there was enough
             // space in the buffer for the data to be written.
             Serial.println("The buffer did not allocate space in time\n");
@@ -44,4 +44,21 @@ void Message_Buffer_Send( MessageBufferHandle_t xMessageBuffer, uint8_t data_arr
             Serial.println("We good\n");
       }
       return;
+}
+
+EventGroupHandle_t EventGroupCreate(){
+      // Attempt to create the event group.
+      EventGroupHandle_t xCreatedEventGroup = xEventGroupCreate();
+
+      // Was the event group created successfully?
+      if( xCreatedEventGroup == NULL )
+      {
+      // The event group was not created because there was insufficient
+      // FreeRTOS heap available.
+            while(1); //Get stuck if event group doesn't get created
+      }
+      else
+      {
+            return xCreatedEventGroup;
+      }
 }

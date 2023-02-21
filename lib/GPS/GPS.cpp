@@ -38,16 +38,14 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
             }
       }
 
-      //Todo: Refactor to use a semaphore timer instead!
-      //Timer to update twice per second
+            //Timer to update twice per second
       if (millis() - timer > 500) {
             //Reset the timer
             timer = millis();
-
-            //Print current Fix status to determine if we have a connection.
-            
             //GPS is active: Calculate lat and longitude
             if (GPS->fix==1) {
+                  Serial.println("Got a fix");
+                  Serial.println(GPS->antenna);
                   //Calculate correct degrees for lat and lat minutes
                   float latitude = GPS->latitude/100.0; // as DD.MMMM
                   int latDegreesInt = (int)(latitude); //DD
@@ -75,10 +73,10 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
                   longitude *= -1.0;
                   }
                   //Display Measured Latitude and Longitude
-                  // Serial.print("Latitude: ");
-                  // Serial.println(latitude, 8);
-                  // Serial.print("Longitude: ");
-                  // Serial.println(longitude, 8);
+                  Serial.print("Lat: ");
+                  Serial.println(latitude, 8);
+                  Serial.print("Long: ");
+                  Serial.println(longitude, 8);
 
                   //Put found latitude and longitude into array to be sent.
                   uint8_t* tempLat = (uint8_t*)(&latitude);
@@ -90,8 +88,12 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
                         array[i+4] = tempLong[i];
                   }
                   return true;
+            }else{ //TODO: Remove else, used for debugging
+                  Serial.println(GPS->antenna);
+                  Serial.println("Trying to get location");
             }
       }
+      
       //If we got here... fix was zero / GPS not establishing connection.
       return 0;
 }
@@ -168,6 +170,7 @@ void GPS_Task(void* p_arg){
       Serial.println("Got into GPS Task");
       Adafruit_GPS GPS(&GPSSerial);
       GPS_Setup(&GPS);
+      uint32_t timer = millis();
       //Serial.println("GPS setup");
       uint8_t data_array[DataBufferSize];
       int cont = 0;
@@ -176,27 +179,22 @@ void GPS_Task(void* p_arg){
 
       //Create the buffer that will be used to send data over to the RF task
       while(1){
-            //Get location and post semaphore for RF
+            //Get location and post event flag for RF
 
             //Returns true if we get a fix and data
             cont = GPS_Location(data_array,timer,&GPS);
 
+            if(cont){
+                  //To my knowledge, pack will get all our data into an array
+                  GPS_Pack_uint8(data_array, &GPS); //This will pack all of our info for the system
 
-            //if(cont) {
-            //To my knowledge, pack will get all our data into an array
-            GPS_Pack_uint8(data_array, &GPS); //This will pack all of our info for the system
+                  //This posts the data to the message buffer that the RF module will use
+                  Message_Buffer_Send(xMessageBuffer, data_array);
 
-            //This posts the data to the message buffer that the RF module will use
-            Message_Buffer_Send(xMessageBuffer, data_array);
-            //delay(100);
-           // }
+                  //Post updateGPS event flag
+                  xEventGroupSetBits(rfEventGroup, updateGPS);
+            }
 
-
-            //Message queue to RF 
-
-            //Post semaphore
-            Serial.println("GPS Task!");
-            delay(100);
       }
 
 }
