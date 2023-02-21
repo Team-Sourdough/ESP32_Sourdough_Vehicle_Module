@@ -37,9 +37,15 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
                   return 0;  // We can fail to parse a sentence in which case we should just wait for another
             }
       }
+
+            //Timer to update twice per second
+      if (millis() - timer > 500) {
+            //Reset the timer
+            timer = millis();
             //GPS is active: Calculate lat and longitude
             if (GPS->fix==1) {
                   Serial.println("Got a fix");
+                  Serial.println(GPS->antenna);
                   //Calculate correct degrees for lat and lat minutes
                   float latitude = GPS->latitude/100.0; // as DD.MMMM
                   int latDegreesInt = (int)(latitude); //DD
@@ -67,10 +73,10 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
                   longitude *= -1.0;
                   }
                   //Display Measured Latitude and Longitude
-                  // Serial.print("Latitude: ");
-                  // Serial.println(latitude, 8);
-                  // Serial.print("Longitude: ");
-                  // Serial.println(longitude, 8);
+                  Serial.print("Lat: ");
+                  Serial.println(latitude, 8);
+                  Serial.print("Long: ");
+                  Serial.println(longitude, 8);
 
                   //Put found latitude and longitude into array to be sent.
                   uint8_t* tempLat = (uint8_t*)(&latitude);
@@ -83,8 +89,10 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
                   }
                   return true;
             }else{ //TODO: Remove else, used for debugging
+                  Serial.println(GPS->antenna);
                   Serial.println("Trying to get location");
             }
+      }
       
       //If we got here... fix was zero / GPS not establishing connection.
       return 0;
@@ -162,6 +170,7 @@ void GPS_Task(void* p_arg){
       Serial.println("Got into GPS Task");
       Adafruit_GPS GPS(&GPSSerial);
       GPS_Setup(&GPS);
+      uint32_t timer = millis();
       //Serial.println("GPS setup");
       uint8_t data_array[DataBufferSize];
       int cont = 0;
@@ -186,7 +195,6 @@ void GPS_Task(void* p_arg){
                   xEventGroupSetBits(rfEventGroup, updateGPS);
             }
 
-            delay(1000);
       }
 
 }

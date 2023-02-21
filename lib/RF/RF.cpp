@@ -60,6 +60,7 @@ void RF_Task(void* p_arg){
       Serial.println("Setup RF");
       uint8_t rfDataArray[DataBufferSize];
       EventBits_t eventFlags;
+      bool gpsDataInitialized{false};
 
       while(1){
             Serial.println("RF Task");
@@ -69,16 +70,24 @@ void RF_Task(void* p_arg){
             // eventFlags = updateGPS;
 
             if(updateGPS & eventFlags) { //update rfDataArray based on new GPS data from buffer
-                  //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
-                  xEventGroupClearBits(rfEventGroup, updateGPS);
                   Message_Buffer_Recieve(xMessageBuffer, rfDataArray);
+                  gpsDataInitialized = true;
                   Serial.println("UPDATE GPS FLAG");
-                   
+                  float* latData = (float*)(&rfDataArray[0]);
+                  float* longData = (float*)(&rfDataArray[4]);
+
+                  Serial.print("Latitude: ");
+                  Serial.println(*latData, 8);
+                  Serial.print("Longitude: ");
+                  Serial.println(*longData, 8);
+                  //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
+                  xEventGroupClearBits(rfEventGroup, updateGPS); 
             }
 
-            if(sirenDetected & eventFlags){
+            if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
                   Serial.println("SIREN FLAG");
                   RF_Send_GPS(rfDataArray,&rf95); 
             }
+            vTaskDelay(x100ms);
       }
 }

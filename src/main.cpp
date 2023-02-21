@@ -49,7 +49,7 @@ void setup(){
     TaskHandle_t micTask;
     xMessageBuffer = Message_Buffer_Create_25byte();
     rfEventGroup = EventGroupCreate();
-    
+
 //Create component tasks
 //CORE 0:
    xTaskCreatePinnedToCore(
@@ -70,7 +70,7 @@ void setup(){
                    0);          /* pin task to core 1 */
 
 
-//CORE 1: (mic will run on its own core) 
+// //CORE 1: (mic will run on its own core) 
    xTaskCreatePinnedToCore(
                   &Mic_Task,   /* Task function. */
                   "Mic Task",     /* name of task. */
@@ -84,7 +84,6 @@ void setup(){
 }
 
 void loop(){
-    delay(10);
 }
 
 //    My_timer = timerBegin(0, 80, true);
