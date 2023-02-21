@@ -2,6 +2,7 @@
 #define MIC_H
 
 #include "../common.h"
+#include "../Button/Button.h"
 
 void mic_setup();
 
