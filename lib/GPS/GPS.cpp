@@ -96,6 +96,11 @@ bool GPS_Location(uint8_t *array, uint32_t timer, Adafruit_GPS *GPS) {
       return 0;
 }
 
+struct gpsArray {
+      uint8_t* array;
+      uint32_t length;
+}
+
 bool GPS_Pack_uint8(uint8_t *array,Adafruit_GPS *GPS) {
       int i = 0;
       int j = 4;
