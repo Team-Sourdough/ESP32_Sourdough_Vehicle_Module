@@ -46,42 +46,44 @@ bool updateGPSStruct(Adafruit_GPS *GPS, GPS_DATA *gpsData){
       //GPS is active: Calculate lat and longitude
       if (GPS->fix==1) {
             Serial.println("Got a fix");
-            //Calculate correct degrees for lat and lat minutes
-            float latitude = GPS->latitude/100.0; // as DD.MMMM
-            int latDegreesInt = (int)(latitude); //DD
-            float temp = latitude - (float)latDegreesInt; //.MMMM
-            float minutes = temp * (float)100.0; //MM.MM
-            float minToDegrees = minutes / 60.0;
-            latitude = (float)latDegreesInt + minToDegrees;
-            //Check if GPS is above or below equator
-            if(GPS->lat == (int)"S"){
-            latitude *= -1;
-            }
-            //More calculations for correct degrees for lat and lat minutes
-            float latDegrees = (float)latDegreesInt;
+            // //Calculate correct degrees for lat and lat minutes
+            // float latitude = GPS->latitude/100.0; // as DD.MMMM
+            // int latDegreesInt = (int)(latitude); //DD
+            // float temp = latitude - (float)latDegreesInt; //.MMMM
+            // float minutes = temp * (float)100.0; //MM.MM
+            // float minToDegrees = minutes / 60.0;
+            // latitude = (float)latDegreesInt + minToDegrees;
+            // //Check if GPS is above or below equator
+            // if(GPS->lat == (int)"S"){
+            // latitude *= -1;
+            // }
+            // //More calculations for correct degrees for lat and lat minutes
+            // float latDegrees = (float)latDegreesInt;
 
-            //Calculate correct degrees for long and long minutes
-            float longitude = GPS->longitude/100.0f;
-            int longDegreesInt = (int)(longitude); //DDD
-            float longTemp = longitude - (float)longDegreesInt; //.MMMM
-            float longMinutes = longTemp * (float)100.0; //MM.MM
-            float longminToDegrees = longMinutes / 60.0;
-            longitude = (float)longDegreesInt + longminToDegrees;
+            // //Calculate correct degrees for long and long minutes
+            // float longitude = GPS->longitude/100.0f;
+            // int longDegreesInt = (int)(longitude); //DDD
+            // float longTemp = longitude - (float)longDegreesInt; //.MMMM
+            // float longMinutes = longTemp * (float)100.0; //MM.MM
+            // float longminToDegrees = longMinutes / 60.0;
+            // longitude = (float)longDegreesInt + longminToDegrees;
 
-            //Check if GPS is west or east of Prime Meridian
-            if(GPS->lon == (int)'W'){
-            longitude *= -1.0;
-            }
+            // //Check if GPS is west or east of Prime Meridian
+            // if(GPS->lon == (int)'W'){
+            // longitude *= -1.0;
+            // }
 
-            //Display Measured Latitude and Longitude
-            Serial.print("Lat: ");
-            Serial.println(latitude, 8);
-            Serial.print("Long: ");
-            Serial.println(longitude, 8);
+            // //Display Measured Latitude and Longitude
+            // Serial.print("Lat: ");
+            // Serial.println(latitude, 8);
+            // Serial.print("Long: ");
+            // Serial.println(longitude, 8);
 
-            gpsData->latitude = latitude;
-            gpsData->longitude = longitude;
-            gpsData->speed = GPS->speed;
+            gpsData->latitude = GPS->latitude;
+            gpsData->latDir = GPS->lat;
+            gpsData->longitude = GPS->longitude;
+            gpsData->longDir = GPS->lon;
+            gpsData->speed = (GPS->speed * KNOTS_TO_MPH);
 
             return true;
       }else{ //TODO: Remove else, used for debugging
@@ -102,7 +104,7 @@ void GPS_Task(void* p_arg){
       //Setup GPS 
       Serial.println("Got into GPS Task");
       GPS_Setup(&GPS);
-      // uint32_t timer = millis();
+      uint32_t timer = millis();
       //Serial.println("GPS setup");
       uint8_t data_array[DataBufferSize];
       int cont = 0;
@@ -132,16 +134,22 @@ void GPS_Task(void* p_arg){
       while(1){
             //Get updated location data
             updateGPSLocation(&GPS);
+            if (millis() - timer > 500) {
+                  //Reset the timer
+                  timer = millis();
+                  cont = updateGPSStruct(&GPS, &gpsData);
+            }
 
             if(cont){
                   //To my knowledge, pack will get all our data into an array
                   // GPS_Pack_uint8(data_array, &GPS); //This will pack all of our info for the system
 
                   //This posts the data to the message buffer that the RF module will use
-                  Message_Buffer_Send(xMessageBuffer, data_array);
+                  // Message_Buffer_Send(xMessageBuffer, data_array);
 
                   //Post updateGPS event flag
                   xEventGroupSetBits(rfEventGroup, updateGPS);
+                  cont = false;
             }
 
             vTaskDelay(x10ms);

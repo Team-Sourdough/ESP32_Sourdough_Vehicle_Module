@@ -7,6 +7,7 @@
 
 #define GPSSerial Serial1 //Using Serial1 because Serial is taken for computer
 #define GPSECHO  false
+#define KNOTS_TO_MPH 1.15078
 
 Adafruit_GPS GPS(&GPSSerial);
 TimerHandle_t gpsTimer;

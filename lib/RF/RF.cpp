@@ -70,16 +70,15 @@ void RF_Task(void* p_arg){
             // eventFlags = updateGPS;
 
             if(updateGPS & eventFlags) { //update rfDataArray based on new GPS data from buffer
-                  Message_Buffer_Recieve(xMessageBuffer, rfDataArray);
+                  // Message_Buffer_Recieve(xMessageBuffer, rfDataArray);
                   gpsDataInitialized = true;
                   Serial.println("UPDATE GPS FLAG");
-                  float* latData = (float*)(&rfDataArray[0]);
-                  float* longData = (float*)(&rfDataArray[4]);
+                  // ParseGPS(&gpsData);
 
                   Serial.print("Latitude: ");
-                  Serial.println(*latData, 8);
+                  Serial.println(gpsData.latitude, 8);
                   Serial.print("Longitude: ");
-                  Serial.println(*longData, 8);
+                  Serial.println(gpsData.longitude, 8);
                   //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
                   xEventGroupClearBits(rfEventGroup, updateGPS); 
             }

@@ -13,7 +13,9 @@
 
 struct GPS_DATA {
     float latitude;
+    char latDir;
     float longitude;
+    char longDir;
     float speed;
 };
 GPS_DATA gpsData;
