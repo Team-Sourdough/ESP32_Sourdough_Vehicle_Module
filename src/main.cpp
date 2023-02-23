@@ -19,15 +19,7 @@
 //    vTaskDelay(1);
 //  } 
 // }
-//
-//void setup() {
-//   
-//}
-//void loop() {
-//    Serial.print("test ");
-//    Serial.println(__FILE__);
-//    delay(1000);
-//}
+
 
 #include <FreeRTOS.h>
 #include <task.h>

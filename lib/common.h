@@ -10,6 +10,15 @@
 
 
 #define BUTTON_GPIO 2
+
+struct GPS_DATA {
+    float latitude;
+    float longitude;
+    float speed;
+};
+GPS_DATA gpsData;
+int timerID = 5;
+const TickType_t x500ms = pdMS_TO_TICKS( 500 );
 // const TickType_t x100ms = pdMS_TO_TICKS( 100 );
 //Message Buffer
 //--------------------------------------------------------------------------------------------------------------
@@ -18,7 +27,6 @@ MessageBufferHandle_t xMessageBuffer;
 //Our buffer size needs to be 25 bytes, however there are an additional 4 bytes to hold the size of the buffer
 const size_t xMessageBufferSizeBytes = 30;
 const int DataBufferSize = 25;
-// uint8_t gpsData[DataBufferSize];
 
 const TickType_t x100ms = pdMS_TO_TICKS( 100 );
 
