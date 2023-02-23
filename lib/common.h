@@ -8,8 +8,14 @@
 #include <message_buffer.h>
 #include <event_groups.h>
 
-
-#define BUTTON_GPIO 2
+struct GPS_DATA {
+    float latitude;
+    float longitude;
+    float speed;
+};
+GPS_DATA gpsData;
+int timerID = 5;
+const TickType_t x500ms = pdMS_TO_TICKS( 500 );
 // const TickType_t x100ms = pdMS_TO_TICKS( 100 );
 //Message Buffer
 //--------------------------------------------------------------------------------------------------------------
