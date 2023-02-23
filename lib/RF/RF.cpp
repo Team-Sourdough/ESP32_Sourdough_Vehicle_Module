@@ -1,6 +1,4 @@
 #include "./RF.h"
-#include "../GPS/GPS.h"
-
 
 //Performs initialization for RF Module, by passing reference to driver.
 void RF_Setup(RH_RF95 *rf95) {
@@ -50,6 +48,32 @@ void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95) {
             //Actual sending operation
             rf95->send(array, 25);
 } 
+
+void PackGPS(uint8_t *array, GPS_DATA *gpsData){
+      uint8_t* temp_lat = (uint8_t*)(&gpsData->latitude);
+      uint8_t* temp_long = (uint8_t*)(&gpsData->longitude);
+      uint8_t* temp_speed = (uint8_t*)(&gpsData->speed);
+
+      //Adding the lattitude to array 
+      memcpy(array, temp_lat, 4);
+      memcpy(array + 4, temp_long, 4);
+      memcpy(array + 8, temp_speed, 4);
+}
+
+void ParseGPS(uint8_t *array, GPS_DATA *gpsData){
+      int latInt = (int)((gpsData->latitude)/100.0);
+      float latitude = (float)latInt + (((((gpsData->latitude)/100.0) - (float)latInt) * (float)100.00)/60);
+      int longInt = (int)((gpsData->longitude)/100.0);
+      float longitude = (float)longInt + (((((gpsData->longitude)/100.0) - (float)longInt) * (float)100.00)/60);
+
+      if(gpsData->latDir == (int) 'S'){
+             latitude *= -1.0;
+      }
+      if(gpsData->longDir == (int)'W'){
+            longitude *= -1.0;
+      }
+      PackGPS(array, gpsData);
+}
 
 
 void RF_Task(void* p_arg){  

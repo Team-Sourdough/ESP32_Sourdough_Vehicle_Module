@@ -2,18 +2,26 @@
 #define COMMON_HG
 
 #include <Arduino.h>
+#include <Adafruit_GPS.h>
 
 //RTOS includes
 #include <FreeRTOS.h>
 #include <message_buffer.h>
 #include <event_groups.h>
 
+#define GPSSerial Serial1 //Using Serial1 because Serial is taken for computer
+
 struct GPS_DATA {
     float latitude;
     float longitude;
     float speed;
+    char latDir;
+    char longDir;
 };
+
+Adafruit_GPS GPS(&GPSSerial);
 GPS_DATA gpsData;
+
 int timerID = 5;
 const TickType_t x500ms = pdMS_TO_TICKS( 500 );
 // const TickType_t x100ms = pdMS_TO_TICKS( 100 );

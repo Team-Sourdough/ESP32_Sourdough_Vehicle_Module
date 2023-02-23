@@ -78,6 +78,6 @@ void setup(){
 void loop(){
 }
 
-//    My_timer = timerBegin(0, 80, true);
-//    timerAttachInterrupt(My_timer, &onTimer, true);
-//    timerAlarmWrite(My_timer, 10 * 1000000, true);  
+   My_timer = timerBegin(0, 80, true);
+   timerAttachInterrupt(My_timer, &onTimer, true);
+   timerAlarmWrite(My_timer, 10 * 1000000, true);  
