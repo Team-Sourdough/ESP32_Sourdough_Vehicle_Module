@@ -90,74 +90,12 @@ bool updateGPSStruct(Adafruit_GPS *GPS, GPS_DATA *gpsData){
       }
 }
 
-// bool GPS_Pack_uint8(uint8_t *array,Adafruit_GPS *GPS) {
-//       int i = 0;
-//       int j = 4;
-//       float type_s = GPS->speed;
-//       float type_a = GPS->angle;
-//       float type_se = GPS->seconds;
-//       uint8_t type_m = GPS->minute;
-//       uint8_t type_h = GPS->hour;
-//       uint8_t type_d = GPS->day;
-//       uint8_t type_mo = GPS->month;
-//       uint8_t type_y = GPS->year;
-//       // Serial.print("Seconds since time is:");
-//       // Serial.println(GPS->secondsSinceTime());
-//       // Serial.print("GPS Seconds is:");
-//       // Serial.println(GPS->seconds);
-//       // Serial.print("Seconds is:");
-//       // Serial.println(type_se);
-//       // Serial.print("Millis is:");
-//       // Serial.println(millis());
-//       // Serial.print("type se to send is:");
-//       // Serial.println(type_se);
 
-//       uint8_t* temp_speed = (uint8_t*)(&type_s);
-//       uint8_t* temp_angle = (uint8_t*)(&type_a);
-//       uint8_t* temp_seconds = (uint8_t*)(&type_se);
-//       uint8_t* temp_minute = (uint8_t*)(&type_m);
-//       uint8_t* temp_hour = (uint8_t*)(&type_h);
-//       uint8_t* temp_day = (uint8_t*)(&type_d);
-//       uint8_t* temp_month = (uint8_t*)(&type_mo);
-//       uint8_t* temp_year = (uint8_t*)(&type_y);
-//       for(i = 8; i < 12; i++){
-//             array[i] = temp_speed[i-8];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 12; i < 16; i++){
-//             array[i] = temp_angle[i-12];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 16; i < 20; i++){
-//             array[i] = temp_seconds[i-16];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 20; i < 21; i++){
-//             array[i] = temp_minute[i-20];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 21; i < 22; i++){
-//             array[i] = temp_hour[i-21];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 22; i < 23; i++){
-//             array[i] = temp_day[i-22];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 23; i < 24; i++){
-//             array[i] = temp_month[i-23];
-//             //Serial.println(array[b]);
-//             }
-//       for(i = 24; i < 25; i++){
-//             array[i] = temp_year[i-24];
-//             //Serial.println(array[b]);
-//             }
-//       return 1;
+
+// void vTimerCallback( TimerHandle_t pxTimer ){
+//       // updateGPSStruct(&GPS, &gpsData);
+//       Serial.println("Timer Callback");
 // }
-
-void vTimerCallback( TimerHandle_t pxTimer ){
-      updateGPSStruct(&GPS, &gpsData);
-}
 
 //GPS Task to handle recieving position and notifies RF task
 void GPS_Task(void* p_arg){
@@ -170,23 +108,23 @@ void GPS_Task(void* p_arg){
       int cont = 0;
 
       //Create Timer
-      gpsTimer = xTimerCreate("GPS Timer",       // Just a text name, not used by the kernel.
-                               x500ms,   // The timer period in ticks.
-                               pdTRUE,        // The timers will auto-reload themselves when they expire.
-                               ( void * ) timerID,  // Assign each timer a unique id equal to its array index.
-                               vTimerCallback // Each timer calls the same callback when it expires.
-                                    );
-      //Start Timer
-      if( gpsTimer == NULL ){
-            Serial.println("Timer not created");
-      }else{
-             // Start the timer.  No block time is specified, and even if one was
-             // it would be ignored because the scheduler has not yet been
-             // started.
-            if(xTimerStart(gpsTimer, 0) != pdPASS){
-                 Serial.println("Timer not started"); 
-             }
-      }                              
+      // gpsTimer = xTimerCreate("GPS Timer",       // Just a text name, not used by the kernel.
+      //                          x500ms,   // The timer period in ticks.
+      //                          pdTRUE,        // The timers will auto-reload themselves when they expire.
+      //                          ( void * ) timerID,  // Assign each timer a unique id equal to its array index.
+      //                          vTimerCallback // Each timer calls the same callback when it expires.
+      //                               );
+      // //Start Timer
+      // if( gpsTimer == NULL ){
+      //       Serial.println("Timer not created");
+      // }else{
+      //        // Start the timer.  No block time is specified, and even if one was
+      //        // it would be ignored because the scheduler has not yet been
+      //        // started.
+      //       if(xTimerStart(gpsTimer, 0) != pdPASS){
+      //            Serial.println("Timer not started"); 
+      //        }
+      // }                              
 
 
       Serial.println("Got GPS Setup");
@@ -206,7 +144,7 @@ void GPS_Task(void* p_arg){
                   xEventGroupSetBits(rfEventGroup, updateGPS);
             }
 
-            // vTaskDelay(x100ms);
+            vTaskDelay(x10ms);
       }
 
 }

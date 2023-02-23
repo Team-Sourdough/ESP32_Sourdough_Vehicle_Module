@@ -29,6 +29,7 @@ const size_t xMessageBufferSizeBytes = 30;
 const int DataBufferSize = 25;
 
 const TickType_t x100ms = pdMS_TO_TICKS( 100 );
+const TickType_t x10ms = pdMS_TO_TICKS( 10 );
 
 //Function Definitions
 void Message_Buffer_Recieve(MessageBufferHandle_t xMessageBuffer, uint8_t data_array[]);

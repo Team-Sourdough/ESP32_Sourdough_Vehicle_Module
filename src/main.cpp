@@ -76,6 +76,7 @@ void setup(){
 }
 
 void loop(){
+    delay(1);
 }
 
 //    My_timer = timerBegin(0, 80, true);
