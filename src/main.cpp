@@ -1,26 +1,3 @@
-
-// TaskHandle_t testTask2;
-
-//void IRAM_ATTR onTimer(){
-//  Serial.println("A minute has passed");
-//}
-//t_idle: idles the system for both cores when nothing is happening
-// void Task1_Handler(void * arg){
-//  Serial.println("Inside Task1");
-//  while(1){
-//    Serial.println("task1 running");
-//    vTaskDelay(1);
-//  } 
-// }
-// void Task2_Handler(void * arg){
-//  Serial.println("Inside Task2");
-//  for(;;){
-//    Serial.println("task2 running");
-//    vTaskDelay(1);
-//  } 
-// }
-
-
 #include <FreeRTOS.h>
 #include <task.h>
 #include <Arduino.h>
@@ -31,16 +8,15 @@
 #include "Button.cpp"
 #include "../lib/common.c"
 
-
 void setup(){
-
      Serial.begin(115200); 
-//Create RTOS objects:
+    //Create RTOS objects:
     TaskHandle_t gpsTask;
     TaskHandle_t rfTask;
     TaskHandle_t micTask;
-    xMessageBuffer = Message_Buffer_Create_25byte();
     rfEventGroup = EventGroupCreate();
+    gpsDataMutex = xSemaphoreCreateMutex();
+
 
 //Create component tasks
 //CORE 0:
@@ -77,8 +53,4 @@ void setup(){
 
 void loop(){
     delay(1);
-}
-
-//    My_timer = timerBegin(0, 80, true);
-//    timerAttachInterrupt(My_timer, &onTimer, true);
-//    timerAlarmWrite(My_timer, 10 * 1000000, true);  
+} 
