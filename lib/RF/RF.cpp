@@ -83,13 +83,14 @@ void RF_Task(void* p_arg){
                   //Post Mutex
                   xSemaphoreGive(gpsDataMutex);
                   //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
+                  rf95.send(rfDataArray, 14);
                   xEventGroupClearBits(rfEventGroup, updateGPS); 
             }
 
-            if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
-                  Serial.println("SIREN FLAG");
-                  RF_Send_GPS(rfDataArray,&rf95); 
-            }
+            // if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
+            //       Serial.println("SIREN FLAG");
+            //       RF_Send_GPS(rfDataArray,&rf95); 
+            // }
             vTaskDelay(x100ms);
       }
 }

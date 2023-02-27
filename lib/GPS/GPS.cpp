@@ -70,7 +70,7 @@ void GPS_Task(void* p_arg){
       while(1){
             //Get updated location data
             updateGPSLocation(&GPS);
-            if (millis() - timer > 500) {
+            if (millis() - timer > 2000) {
                   //Reset the timer
                   timer = millis();
                   cont = updateGPSStruct(&GPS, &gpsData);
