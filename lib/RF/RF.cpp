@@ -91,6 +91,6 @@ void RF_Task(void* p_arg){
             //       Serial.println("SIREN FLAG");
             //       RF_Send_GPS(rfDataArray,&rf95); 
             // }
-            vTaskDelay(x100ms);
+            delay(2000);
       }
 }
