@@ -22,9 +22,14 @@ void button_setup(){
     attachInterrupt(BUTTON_GPIO, Button_ISR, FALLING);
 }
 void Test_Task(void* p_arg){
+  uint32_t timer = millis();
   while(1) {
-        Serial.println("Test Task");
-        vTaskDelay(x10ms);
+      if (millis() - timer > 2000) {
+            // Reset the timer
+            Serial.println("Test Task");
+            timer = millis();
+          }
+      vTaskDelay(x10ms);
   }
 }
 
@@ -55,15 +60,18 @@ void Mic_Task(void* p_arg){
         CreateWavHeader(header, waveDataSize);
 
         Serial.print("Starting recording ");
-        Serial.print(record_runs);
-        // if(SD.exists(filename)) {
-        SD.remove(filename);
-        // }
+        Serial.println(record_runs);
+        if(SD.exists(filename)) {
+          SD.remove(filename);
+        }
         if(record_runs == '9') {
           record_runs = '0';
         }
         file = SD.open(filename, FILE_WRITE);
-        if (!file) return;
+        if (!file)  {
+          Serial.print("File Failed");
+          return;
+        }
         file.write(header, headerSize);
         for (int j = 0; j < waveDataSize/numPartWavData; ++j) {
           I2S_Read(communicationData, numCommunicationData);
@@ -74,8 +82,8 @@ void Mic_Task(void* p_arg){
           file.write((const byte*)partWavData, numPartWavData);
         }
         file.close();
-        Serial.println(" -> Finished Recording.");
+        Serial.println("Finished Recording.");
         record_runs++;
-        vTaskDelay(x10ms);
+        // vTaskDelay(x500ms);
        }
 }

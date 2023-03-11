@@ -18,7 +18,6 @@ void RF_Setup(RH_RF95 *rf95) {
       while (!rf95->init()) {
       Serial.println("LoRa radio init failed");
       Serial.println("Uncomment '#define SERIAL_DEBUG' in RH_RF95.cpp for detailed debug info");
-      while (1);
       }
       //Success!
       Serial.println("LoRa radio init OK!");
@@ -26,7 +25,6 @@ void RF_Setup(RH_RF95 *rf95) {
       //Set frequency for RF Module
       if (!rf95->setFrequency(RF95_FREQ)) {
       Serial.println("setFrequency failed");
-      while (1);
       }
       //Success!
       Serial.println("Set Freq to: "); Serial.println(RF95_FREQ);
@@ -47,7 +45,9 @@ void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95) {
 
 void PackGPS(uint8_t *array, GPS_DATA *gpsData){
       static const uint16_t VEHICLE_ID = 12345;
-
+      // gpsData->latitude = 40.03017425537110;
+      // gpsData->longitude = -105.26309967041015;
+      // gpsData->speed = 69;
       //Adding the lattitude to array 
       memcpy(array, (&gpsData->latitude), sizeof(gpsData->latitude));
       memcpy(array + sizeof(gpsData->latitude), (&gpsData->longitude), sizeof(gpsData->longitude));
@@ -58,13 +58,13 @@ void PackGPS(uint8_t *array, GPS_DATA *gpsData){
 
 void RF_Task(void* p_arg){  
       // Setup RF
+      Serial.println("Attempting to Setup RF");
       RH_RF95 rf95(RFM95_CS, RFM95_INT);
       RF_Setup(&rf95);
       Serial.println("Setup RF");
       static uint8_t rfDataArray[RF_DATA_SIZE];
       EventBits_t eventFlags;
       bool gpsDataInitialized{false};
-
 
       while(1){
             Serial.println("RF Task");
@@ -87,10 +87,10 @@ void RF_Task(void* p_arg){
                   xEventGroupClearBits(rfEventGroup, updateGPS); 
             }
 
-            // if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
-            //       Serial.println("SIREN FLAG");
-            //       RF_Send_GPS(rfDataArray,&rf95); 
-            // }
+            if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
+                  Serial.println("SIREN FLAG");
+                  RF_Send_GPS(rfDataArray,&rf95); 
+            }
             vTaskDelay(x100ms);
       }
 }
