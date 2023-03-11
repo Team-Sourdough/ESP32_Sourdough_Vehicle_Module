@@ -13,7 +13,7 @@
     #define INTERRUPT_ATTR
 #endif
 
-// #define SERIAL_DEBUG // Uncomment to recieve debug information over serial
+#define SERIAL_DEBUG // Uncomment to recieve debug information over serial
 
 // Interrupt vectors for the 3 Arduino interrupt pins
 // Each interrupt can be handled by a different instance of RH_RF95, allowing you to have
@@ -224,6 +224,7 @@ void RH_RF95::handleInterrupt()
 // 3 interrupts allows us to have 3 different devices
 void INTERRUPT_ATTR RH_RF95::isr0()
 {
+    Serial.println("RF Interrupt");
     if (_deviceForInterrupt[0])
 	_deviceForInterrupt[0]->handleInterrupt();
 }
@@ -295,12 +296,13 @@ bool RH_RF95::send(const uint8_t* data, uint8_t len)
     if (len > RH_RF95_MAX_MESSAGE_LEN)
 	return false;
 
-    waitPacketSent(); // Make sure we dont interrupt an outgoing message
+    // waitPacketSent(500); // Make sure we dont interrupt an outgoing message
     setModeIdle();
 
-    if (!waitCAD())
-	return false;  // Check channel activity
+    // if (!waitCAD())
+	// return false;  // Check channel activity
 
+    Serial.println("Begin spi writes");
     // Position at the beginning of the FIFO
     spiWrite(RH_RF95_REG_0D_FIFO_ADDR_PTR, 0);
     // The headers
@@ -314,6 +316,7 @@ bool RH_RF95::send(const uint8_t* data, uint8_t len)
 
     setModeTx(); // Start the transmitter
     // when Tx is done, interruptHandler will fire and radio mode will return to STANDBY
+    Serial.println("End spi writes");
     return true;
 }
 

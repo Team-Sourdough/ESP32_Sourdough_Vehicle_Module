@@ -4,10 +4,6 @@
 
 //Performs initialization for RF Module, by passing reference to driver.
 void RF_Setup(RH_RF95 *rf95) {
-      //Establish RST Pin and set.
-      pinMode(RFM95_RST, OUTPUT); 
-      digitalWrite(RFM95_RST, HIGH); 
-
       //Perform Manual reset before continuing init
       digitalWrite(RFM95_RST, LOW);
       delay(10);
@@ -67,7 +63,7 @@ void RF_Task(void* p_arg){
 
 
       while(1){
-            Serial.println("RF Task");
+            // Serial.println("RF Task");
             
             //Pend on updateGPS and siren event flags
             eventFlags = xEventGroupWaitBits(rfEventGroup, (updateGPS | sirenDetected), pdFALSE, pdFALSE, EVENT_GROUP_PEND_BLOCKING);
@@ -91,6 +87,7 @@ void RF_Task(void* p_arg){
             //       Serial.println("SIREN FLAG");
             //       RF_Send_GPS(rfDataArray,&rf95); 
             // }
-            vTaskDelay(x100ms);
+            // vTaskDelay(x100ms);
+            delay(500);
       }
 }

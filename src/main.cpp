@@ -25,7 +25,7 @@ void setup(){
                    "GPS Task",     /* name of task. */
                    10240,       /* Stack size of task */
                    NULL,        /* parameter of the task */
-                   10,           /* priority of the task */
+                   12,           /* priority of the task */
                    &gpsTask,      /* Task handle to keep track of created task */
                    0);          /* pin task to core 1 */ 
    xTaskCreatePinnedToCore(
@@ -35,18 +35,18 @@ void setup(){
                    NULL,        /* parameter of the task */
                    10,           /* priority of the task */
                    &rfTask,      /* Task handle to keep track of created task */
-                   0);          /* pin task to core 1 */
+                   1);          /* pin task to core 1 */
 
 
 // //CORE 1: (mic will run on its own core) 
-   xTaskCreatePinnedToCore(
-                  &Mic_Task,   /* Task function. */
-                  "Mic Task",     /* name of task. */
-                  10240,       /* Stack size of task */
-                  NULL,        /* parameter of the task */
-                  10,           /* priority of the task */
-                  &micTask,      /* Task handle to keep track of created task */
-                  1);          /* pin task to core 1 */ 
+//    xTaskCreatePinnedToCore(
+//                   &Mic_Task,   /* Task function. */
+//                   "Mic Task",     /* name of task. */
+//                   10240,       /* Stack size of task */
+//                   NULL,        /* parameter of the task */
+//                   10,           /* priority of the task */
+//                   &micTask,      /* Task handle to keep track of created task */
+//                   1);          /* pin task to core 1 */ 
 
 
 }

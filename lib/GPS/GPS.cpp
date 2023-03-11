@@ -9,7 +9,12 @@ void GPS_Setup(Adafruit_GPS *GPS) {
     GPS->sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
 
     // Set the update rate
-    GPS->sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+    GPS->sendCommand(PMTK_SET_NMEA_UPDATE_5HZ);
+
+// #define PMTK_SET_NMEA_UPDATE_1HZ "$PMTK220,1000*1F" ///<  1 Hz
+// #define PMTK_SET_NMEA_UPDATE_2HZ "$PMTK220,500*2B"  ///<  2 Hz
+// #define PMTK_SET_NMEA_UPDATE_5HZ "$PMTK220,200*2C"  ///<  5 Hz
+// #define PMTK_SET_NMEA_UPDATE_10HZ "$PMTK220,100*2F" ///< 10 Hz
 
     // Request updates on antenna status, wait short delay
     GPS->sendCommand(PGCMD_ANTENNA);
@@ -52,8 +57,12 @@ bool updateGPSStruct(Adafruit_GPS *GPS, GPS_DATA *gpsData){
             gpsData->latitude = GPS->latitudeDegrees;
             gpsData->longitude = GPS->longitudeDegrees;
             gpsData->speed = (GPS->speed * KNOTS_TO_MPH);
+            Serial.println(gpsData->latitude,8);
+            Serial.println(gpsData->longitude,8);
+            Serial.println(gpsData->speed);
             //Release Mutex
             xSemaphoreGive(gpsDataMutex);
+            GPS->fix = 0;
             return true;
       }else{ //TODO: Remove else, used for debugging
             // Serial.println("No Fix");
@@ -66,20 +75,20 @@ void GPS_Task(void* p_arg){
       //Setup GPS 
       GPS_Setup(&GPS);
       uint32_t timer = millis();
-      int cont = 0;                     
+      bool gpsUpdated{false};                     
       while(1){
             //Get updated location data
             updateGPSLocation(&GPS);
-            if (millis() - timer > 2000) {
+            if (millis() - timer > 1000) {
                   //Reset the timer
                   timer = millis();
-                  cont = updateGPSStruct(&GPS, &gpsData);
+                  gpsUpdated = updateGPSStruct(&GPS, &gpsData);
             }
 
-            if(cont){
+            if(gpsUpdated){
                   //Post updateGPS event flag
                   xEventGroupSetBits(rfEventGroup, updateGPS);
-                  cont = false;
+                  gpsUpdated = false;
             }
 
             vTaskDelay(x10ms);

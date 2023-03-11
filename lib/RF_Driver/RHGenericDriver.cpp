@@ -28,8 +28,9 @@ bool RHGenericDriver::init()
 // Blocks until a valid message is received
 void RHGenericDriver::waitAvailable()
 {
-    while (!available())
-	YIELD;
+    while (!available()){
+	    taskYIELD();
+    }
 }
 
 // Blocks until a valid message is received or timeout expires
@@ -44,15 +45,17 @@ bool RHGenericDriver::waitAvailableTimeout(uint16_t timeout)
 	{
            return true;
 	}
-	YIELD;
+	    taskYIELD();
     }
     return false;
 }
 
 bool RHGenericDriver::waitPacketSent()
 {
-    while (_mode == RHModeTx)
-	YIELD; // Wait for any previous transmit to finish
+    while (_mode == RHModeTx){
+        taskYIELD();
+    }
+	// YIELD; // Wait for any previous transmit to finish
     return true;
 }
 
@@ -63,7 +66,8 @@ bool RHGenericDriver::waitPacketSent(uint16_t timeout)
     {
         if (_mode != RHModeTx) // Any previous transmit finished?
            return true;
-	YIELD;
+	taskYIELD();
+    // YIELD;
     }
     return false;
 }
@@ -82,6 +86,7 @@ bool RHGenericDriver::waitCAD()
     unsigned long t = millis();
     while (isChannelActive())
     {
+        Serial.println("Channel Active!~");
          if (millis() - t > _cad_timeout) 
 	     return false;
 #if (RH_PLATFORM == RH_PLATFORM_STM32) // stdlib on STMF103 gets confused if random is redefined
