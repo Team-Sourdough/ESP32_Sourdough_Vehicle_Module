@@ -14,9 +14,8 @@
 #define MISO  18
 #define MOSI  16
 #define CS  6
-#define I2S_MODE I2S_MODE_RX
-SPIClass spi = SPIClass(HSPI);
-char record_runs = '0';
+#define I2S_MODE I2S_MODE_RX //We are receiving sound, not sending it.
+SPIClass spi = SPIClass(HSPI); //Use different SPI line than RF module
 
 void mic_setup();
 void sd_setup();

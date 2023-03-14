@@ -9,13 +9,12 @@
 #include "../lib/common.c"
 
 void setup(){
-    spi.begin(SCK, MISO, MOSI, CS);
     Serial.begin(115200); 
     //Create RTOS objects:
     TaskHandle_t gpsTask;
     TaskHandle_t rfTask;
     TaskHandle_t micTask;
-    TaskHandle_t TestTask;
+    // TaskHandle_t TestTask;
     rfEventGroup = EventGroupCreate();
     gpsDataMutex = xSemaphoreCreateMutex();
 

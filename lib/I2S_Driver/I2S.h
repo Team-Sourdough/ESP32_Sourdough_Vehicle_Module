@@ -4,11 +4,13 @@
 #include "driver/i2s.h"
 #include "esp_system.h"
 #define SAMPLE_RATE (44100)
-#define PIN_I2S_BCLK 41 //26
-#define PIN_I2S_LRC 40 //22
-#define PIN_I2S_DIN 9 //34
-#define PIN_I2S_DOUT 48 //25
-
+// #define PIN_I2S_BCLK 41 //26
+// #define PIN_I2S_LRC 40 //22
+// #define PIN_I2S_DIN 9 //34
+// #define PIN_I2S_DOUT 48 //25
+#define I2S_MIC_SERIAL_CLOCK GPIO_NUM_41
+#define I2S_MIC_LEFT_RIGHT_CLOCK GPIO_NUM_40
+#define I2S_MIC_SERIAL_DATA GPIO_NUM_9
 // This I2S specification : 
 //  -   LRC high is channel 2 (right).
 //  -   LRC signal transitions once each word.
@@ -22,8 +24,8 @@
 //  -   44100Hz
 //  -   stereo
 
-/// @parameter MODE : I2S_MODE_RX or I2S_MODE_TX
-/// @parameter BPS : I2S_BITS_PER_SAMPLE_16BIT or I2S_BITS_PER_SAMPLE_32BIT
+/// @parameter MODE : I2S_MODE_RX
+/// @parameter BPS : I2S_BITS_PER_SAMPLE_32BIT
 void I2S_Init(i2s_mode_t MODE, i2s_bits_per_sample_t BPS);
 
 /// I2S_Read() for I2S_MODE_RX
@@ -31,7 +33,7 @@ void I2S_Init(i2s_mode_t MODE, i2s_bits_per_sample_t BPS);
 /// @parameter numData: buffer size
 /// @return Number of bytes read
 int I2S_Read(char* data, int numData);
-void I2S_Read2(char* data, int numData);
+void I2S_Read2(char* data, int numData); //Used for debugging
 
 /// I2S_Write() for I2S_MODE_TX
 /// @param data: pointer to buffer
