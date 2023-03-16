@@ -44,10 +44,8 @@ void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95) {
 
 
 void PackGPS(uint8_t *array, GPS_DATA *gpsData){
-      static const uint16_t VEHICLE_ID = 12345;
-      // gpsData->latitude = 40.03017425537110;
-      // gpsData->longitude = -105.26309967041015;
-      // gpsData->speed = 69;
+      static const uint16_t VEHICLE_ID = 42069;
+
       //Adding the lattitude to array 
       memcpy(array, (&gpsData->latitude), sizeof(gpsData->latitude));
       memcpy(array + sizeof(gpsData->latitude), (&gpsData->longitude), sizeof(gpsData->longitude));
@@ -83,13 +81,14 @@ void RF_Task(void* p_arg){
                   //Post Mutex
                   xSemaphoreGive(gpsDataMutex);
                   //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
-                  rf95.send(rfDataArray, 14);
+                  // rf95.send(rfDataArray, 14);
                   xEventGroupClearBits(rfEventGroup, updateGPS); 
             }
 
             if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
                   Serial.println("SIREN FLAG");
-                  RF_Send_GPS(rfDataArray,&rf95); 
+                  rf95.send(rfDataArray, RF_DATA_SIZE);
+
             }
             vTaskDelay(x100ms);
       }
