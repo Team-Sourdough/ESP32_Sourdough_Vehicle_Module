@@ -68,6 +68,7 @@ void GPS_Task(void* p_arg){
       uint32_t timer = millis();
       int cont = 0;                     
       while(1){
+            // Serial.println("IN GPS");
             //Get updated location data
             updateGPSLocation(&GPS);
             if (millis() - timer > 2000) {

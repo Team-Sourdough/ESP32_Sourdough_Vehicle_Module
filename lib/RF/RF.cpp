@@ -18,7 +18,6 @@ void RF_Setup(RH_RF95 *rf95) {
       while (!rf95->init()) {
       Serial.println("LoRa radio init failed");
       Serial.println("Uncomment '#define SERIAL_DEBUG' in RH_RF95.cpp for detailed debug info");
-      while (1);
       }
       //Success!
       Serial.println("LoRa radio init OK!");
@@ -26,7 +25,6 @@ void RF_Setup(RH_RF95 *rf95) {
       //Set frequency for RF Module
       if (!rf95->setFrequency(RF95_FREQ)) {
       Serial.println("setFrequency failed");
-      while (1);
       }
       //Success!
       Serial.println("Set Freq to: "); Serial.println(RF95_FREQ);
@@ -58,13 +56,13 @@ void PackGPS(uint8_t *array, GPS_DATA *gpsData){
 
 void RF_Task(void* p_arg){  
       // Setup RF
+      Serial.println("Attempting to Setup RF");
       RH_RF95 rf95(RFM95_CS, RFM95_INT);
       RF_Setup(&rf95);
       Serial.println("Setup RF");
       static uint8_t rfDataArray[RF_DATA_SIZE];
       EventBits_t eventFlags;
       bool gpsDataInitialized{false};
-
 
       while(1){
             Serial.println("RF Task");
@@ -90,6 +88,7 @@ void RF_Task(void* p_arg){
             if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
                   Serial.println("SIREN FLAG");
                   rf95.send(rfDataArray, RF_DATA_SIZE);
+
             }
             vTaskDelay(x100ms);
       }
