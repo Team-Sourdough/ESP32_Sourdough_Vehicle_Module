@@ -18,6 +18,7 @@ struct GPS_DATA {
 };
 
 static GPS_DATA gpsData;
+constexpr uint16_t VEHICLE_ID = 101;
 
 int timerID = 5;
 constexpr TickType_t x500ms = pdMS_TO_TICKS( 500 );

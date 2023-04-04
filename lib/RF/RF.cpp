@@ -30,27 +30,26 @@ void RF_Setup(RH_RF95 *rf95) {
       Serial.println("Set Freq to: "); Serial.println(RF95_FREQ);
       rf95->setTxPower(23, false);
 }
-//Sends GPS coordinates in latitude, longitude 
-void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95) {
-            //Display on Sending side to confirm buffer structure and what is being sent
-            // rf95->printBuffer("latitude array :", array, (uint8_t)4);
-            // rf95->printBuffer("longitude array :", array+4, (uint8_t)4);
-            // rf95->printBuffer("speed array :", array+8, (uint8_t)4);
-            // rf95->printBuffer("Vehicle ID :", array+12, (uint8_t)2);
-
-            //Actual sending operation
-            rf95->send(array, RF_DATA_SIZE);
-} 
-
 
 void PackGPS(uint8_t *array, GPS_DATA *gpsData){
-      static const uint16_t VEHICLE_ID = 42069;
-
+      static int latIncrement{0};
+      static int longIncrement{0};
+      static int speedIncrement{0};
+      gpsData->latitude = 40.000113 + latIncrement;
+      gpsData->longitude = -105.236410 + longIncrement;
+      gpsData->speed = 5.0 + 1.5*speedIncrement;
       //Adding the lattitude to array 
       memcpy(array, (&gpsData->latitude), sizeof(gpsData->latitude));
       memcpy(array + sizeof(gpsData->latitude), (&gpsData->longitude), sizeof(gpsData->longitude));
       memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude), (&gpsData->speed), sizeof(gpsData->speed));
       memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude) + sizeof(gpsData->speed), &VEHICLE_ID, sizeof(VEHICLE_ID));
+
+      latIncrement += 1;
+      longIncrement += 1;
+      if(gpsData->speed >= 75.0){
+            speedIncrement = -1;
+      }
+
 }
 
 
@@ -68,25 +67,26 @@ void RF_Task(void* p_arg){
             Serial.println("RF Task");
             
             //Pend on updateGPS and siren event flags
-            eventFlags = xEventGroupWaitBits(rfEventGroup, (updateGPS | sirenDetected), pdFALSE, pdFALSE, EVENT_GROUP_PEND_BLOCKING);
+            eventFlags = xEventGroupWaitBits(rfEventGroup, (sirenDetected), pdFALSE, pdFALSE, EVENT_GROUP_PEND_BLOCKING);
             // eventFlags = updateGPS;
 
-            if(updateGPS & eventFlags) { //update rfDataArray based on new GPS data from buffer
-                  gpsDataInitialized = true;
-                  Serial.println("UPDATE GPS FLAG");
-                  //Pend Mutex
-                  xSemaphoreTake(gpsDataMutex, portMAX_DELAY);
-                  //Copy data into RF struct
-                  PackGPS(rfDataArray, &gpsData);
-                  //Post Mutex
-                  xSemaphoreGive(gpsDataMutex);
-                  //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
-                  // rf95.send(rfDataArray, 14);
-                  xEventGroupClearBits(rfEventGroup, updateGPS); 
-            }
-
+            // if(updateGPS & eventFlags) { //update rfDataArray based on new GPS data from buffer
+            //       gpsDataInitialized = true;
+            //       Serial.println("UPDATE GPS FLAG");
+            //       //Pend Mutex
+            //       xSemaphoreTake(gpsDataMutex, portMAX_DELAY);
+            //       //Copy data into RF struct
+            //       
+            //       //Post Mutex
+            //       xSemaphoreGive(gpsDataMutex);
+            //       //Manually clear GPS flag so we can leave siren detected flag active unitl mic (or button task) clears the bit
+            //       // rf95.send(rfDataArray, 14);
+            //       xEventGroupClearBits(rfEventGroup, updateGPS); 
+            // }
             if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
                   Serial.println("SIREN FLAG");
+                  delay(100);
+                  PackGPS(rfDataArray, &gpsData);
                   rf95.send(rfDataArray, RF_DATA_SIZE);
 
             }

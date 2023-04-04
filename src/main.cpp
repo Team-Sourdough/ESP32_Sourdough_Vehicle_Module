@@ -22,14 +22,14 @@ void setup(){
 
 //Create component tasks
 //CORE 0:
-   xTaskCreatePinnedToCore(
-                   &GPS_Task,   /* Task function. */
-                   "GPS Task",     /* name of task. */
-                   10240,       /* Stack size of task */
-                   NULL,        /* parameter of the task */
-                   10,           /* priority of the task */
-                   &gpsTask,      /* Task handle to keep track of created task */
-                   0);          /* pin task to core 0 */ 
+//    xTaskCreatePinnedToCore(
+//                    &GPS_Task,   /* Task function. */
+//                    "GPS Task",     /* name of task. */
+//                    10240,       /* Stack size of task */
+//                    NULL,        /* parameter of the task */
+//                    10,           /* priority of the task */
+//                    &gpsTask,      /* Task handle to keep track of created task */
+//                    0);          /* pin task to core 0 */ 
    xTaskCreatePinnedToCore(
                    &RF_Task,   /* Task function. */
                    "RF Task",     /* name of task. */
