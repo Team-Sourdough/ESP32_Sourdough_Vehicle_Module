@@ -85,7 +85,7 @@ void RF_Task(void* p_arg){
             // }
             if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
                   Serial.println("SIREN FLAG");
-                  delay(100);
+                  delay(1000);//send data only 1 time a second
                   PackGPS(rfDataArray, &gpsData);
                   rf95.send(rfDataArray, RF_DATA_SIZE);
 
