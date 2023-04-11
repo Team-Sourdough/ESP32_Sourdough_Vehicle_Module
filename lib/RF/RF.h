@@ -14,7 +14,7 @@
 //Radio frequency
 #define RF95_FREQ 915.0 //must match RX's freq!
 #define RF_DATA_SIZE 14
-
+uint16_t VEHICLE_ID = 123;
 void RF_Setup(RH_RF95 *rf95);
 void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95);
 void PackGPS(uint8_t *array, GPS_DATA *gpsData);

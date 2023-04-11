@@ -60,6 +60,9 @@ void Mic_Task(void* p_arg){
     mic_setup();
     button_setup();
     while(1){
+        if(record_runs > '9') {
+          record_runs = '0';
+        }
         //Set new file name suffix (0-9)         
         filename[12] = record_runs;
         CreateWavHeader(header, waveDataSize);
@@ -71,9 +74,6 @@ void Mic_Task(void* p_arg){
         //If looping, remove old file. If at 11th file, reset. 
         if(SD.exists(filename)) {
           SD.remove(filename);
-        }
-        if(record_runs > '9') {
-          record_runs = '0';
         }
         //Ensure we can open the file to start writing, then take readings.
         file = SD.open(filename, FILE_WRITE);
