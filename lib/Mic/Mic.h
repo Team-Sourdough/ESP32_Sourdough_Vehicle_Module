@@ -4,7 +4,7 @@
 #include "../common.h"
 #include "../Button/Button.h"
 #include "../I2S_Driver/I2S.h"
-#include "../wav/wav.h"
+#include "../wav/Wav.h"
 #include <driver/i2s.h>
 #include <FS.h>
 #include <SD.h>
