@@ -44,7 +44,7 @@ void RF_Send_GPS(uint8_t *array, RH_RF95 *rf95) {
 
 
 void PackGPS(uint8_t *array, GPS_DATA *gpsData){
-      static const uint16_t VEHICLE_ID = 42069;
+      static const uint16_t VEHICLE_ID = 1;
 
       //Adding the lattitude to array 
       memcpy(array, (&gpsData->latitude), sizeof(gpsData->latitude));
