@@ -31,13 +31,16 @@ void RF_Setup(RH_RF95 *rf95) {
       rf95->setTxPower(23, false);
 }
 
+static float longIncrement{0};
+static float latIncrement{0};
+static float speedIncrement{1};
 void PackGPS(uint8_t *array, GPS_DATA *gpsData){
-      static int latIncrement{0};
-      static int longIncrement{0};
-      static int speedIncrement{1};
+      Serial.println(latIncrement);
+      Serial.println(longIncrement);
+      Serial.println(speedIncrement);
       gpsData->latitude = 40.000113 + latIncrement;
       gpsData->longitude = -105.236410 + longIncrement;
-      gpsData->speed = 5.0 + 1.5*speedIncrement;
+      gpsData->speed = gpsData->speed + 5*speedIncrement;
       //Adding the data to array 
       memcpy(array, (&gpsData->latitude), sizeof(gpsData->latitude));
       memcpy(array + sizeof(gpsData->latitude), (&gpsData->longitude), sizeof(gpsData->longitude));
