@@ -20,6 +20,7 @@ void IRAM_ATTR Button_ISR(){
         if( xResult == pdPASS ) { //Bit was cleared successfully
                 sirenDetectedFlag = false;
         }
+        CYCLE_LIGHT = 1;
         Serial.println("Clearing bit");
     }else{ //flag is not set so set bit
         xResult = xEventGroupSetBitsFromISR(rfEventGroup,    // The event group being updated.

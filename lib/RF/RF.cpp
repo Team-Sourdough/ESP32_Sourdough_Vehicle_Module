@@ -43,6 +43,7 @@ void PackGPS(uint8_t *array, GPS_DATA *gpsData){
       memcpy(array + sizeof(gpsData->latitude), (&gpsData->longitude), sizeof(gpsData->longitude));
       memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude), (&gpsData->speed), sizeof(gpsData->speed));
       memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude) + sizeof(gpsData->speed), &VEHICLE_ID, sizeof(VEHICLE_ID));
+      memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude) + sizeof(gpsData->speed) + sizeof(VEHICLE_ID), &CYCLE_LIGHT, sizeof(CYCLE_LIGHT));
 
       latIncrement += .1;
       longIncrement += .3;
@@ -90,7 +91,7 @@ void RF_Task(void* p_arg){
                   delay(1000);//send data only 1 time a second
                   PackGPS(rfDataArray, &gpsData);
                   rf95.send(rfDataArray, RF_DATA_SIZE);
-
+                  CYCLE_LIGHT = 0;
             }
             vTaskDelay(x100ms);
       }

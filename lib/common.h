@@ -16,6 +16,7 @@ struct GPS_DATA {
     float longitude;
     float speed;
 };
+static uint8_t CYCLE_LIGHT = 1;
 
 static GPS_DATA gpsData;
 constexpr uint16_t VEHICLE_ID = 101;
