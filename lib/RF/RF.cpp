@@ -34,20 +34,22 @@ void RF_Setup(RH_RF95 *rf95) {
 void PackGPS(uint8_t *array, GPS_DATA *gpsData){
       static int latIncrement{0};
       static int longIncrement{0};
-      static int speedIncrement{0};
+      static int speedIncrement{1};
       gpsData->latitude = 40.000113 + latIncrement;
       gpsData->longitude = -105.236410 + longIncrement;
       gpsData->speed = 5.0 + 1.5*speedIncrement;
-      //Adding the lattitude to array 
+      //Adding the data to array 
       memcpy(array, (&gpsData->latitude), sizeof(gpsData->latitude));
       memcpy(array + sizeof(gpsData->latitude), (&gpsData->longitude), sizeof(gpsData->longitude));
       memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude), (&gpsData->speed), sizeof(gpsData->speed));
       memcpy(array + sizeof(gpsData->latitude) + sizeof(gpsData->longitude) + sizeof(gpsData->speed), &VEHICLE_ID, sizeof(VEHICLE_ID));
 
-      latIncrement += 1;
-      longIncrement += 1;
+      latIncrement += .1;
+      longIncrement += .3;
       if(gpsData->speed >= 75.0){
             speedIncrement = -1;
+      }else if(gpsData->speed <= 0){
+            speedIncrement= 1;
       }
 
 }
@@ -83,7 +85,7 @@ void RF_Task(void* p_arg){
             //       // rf95.send(rfDataArray, 14);
             //       xEventGroupClearBits(rfEventGroup, updateGPS); 
             // }
-            if(sirenDetected & eventFlags && gpsDataInitialized){ //only send if we have gps fix and real data
+            if(sirenDetected & eventFlags){ //only send if we have gps fix and real data
                   Serial.println("SIREN FLAG");
                   delay(1000);//send data only 1 time a second
                   PackGPS(rfDataArray, &gpsData);
